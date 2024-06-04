@@ -2,15 +2,15 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "29ad7d03",
+   "id": "ac270053",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "papermill": {
-     "duration": 0.00258,
-     "end_time": "2024-06-04T10:31:15.360475",
+     "duration": 0.005567,
+     "end_time": "2024-06-04T12:34:52.523565",
      "exception": false,
-     "start_time": "2024-06-04T10:31:15.357895",
+     "start_time": "2024-06-04T12:34:52.517998",
      "status": "completed"
     },
     "tags": []
@@ -21,13 +21,13 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3864b60f",
+   "id": "1ec6fc2a",
    "metadata": {
     "papermill": {
-     "duration": 0.00179,
-     "end_time": "2024-06-04T10:31:15.364604",
+     "duration": 0.004641,
+     "end_time": "2024-06-04T12:34:52.533354",
      "exception": false,
-     "start_time": "2024-06-04T10:31:15.362814",
+     "start_time": "2024-06-04T12:34:52.528713",
      "status": "completed"
     },
     "tags": []
@@ -39,31 +39,889 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "e1125ede",
+   "id": "12314142",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-04T10:31:15.370599Z",
-     "iopub.status.busy": "2024-06-04T10:31:15.370159Z",
-     "iopub.status.idle": "2024-06-04T10:31:17.953898Z",
-     "shell.execute_reply": "2024-06-04T10:31:17.952478Z"
+     "iopub.execute_input": "2024-06-04T12:34:52.545136Z",
+     "iopub.status.busy": "2024-06-04T12:34:52.544701Z",
+     "iopub.status.idle": "2024-06-04T12:35:30.996042Z",
+     "shell.execute_reply": "2024-06-04T12:35:30.994905Z"
     },
     "papermill": {
-     "duration": 2.590478,
-     "end_time": "2024-06-04T10:31:17.957047",
+     "duration": 38.46034,
+     "end_time": "2024-06-04T12:35:30.998711",
      "exception": false,
-     "start_time": "2024-06-04T10:31:15.366569",
+     "start_time": "2024-06-04T12:34:52.538371",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2024-06-04 12:35:20.438346: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n",
+      "2024-06-04 12:35:20.438475: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n",
+      "2024-06-04 12:35:20.585913: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "import re\n",
+    "import string\n",
+    "import emoji\n",
+    "import nltk\n",
+    "import spacy\n",
+    "from tqdm import tqdm\n",
+    "from nltk.corpus import stopwords\n",
+    "from gensim.models import Word2Vec\n",
+    "from tensorflow.keras.preprocessing.text import Tokenizer\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "from sklearn.tree import DecisionTreeClassifier\n",
+    "from sklearn.metrics import classification_report\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay\n",
+    "from sklearn.preprocessing import MinMaxScaler, LabelEncoder, OrdinalEncoder"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "34f7e75d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00498,
+     "end_time": "2024-06-04T12:35:31.009109",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:31.004129",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Importing Data**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "27c4d7b3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:31.021714Z",
+     "iopub.status.busy": "2024-06-04T12:35:31.020968Z",
+     "iopub.status.idle": "2024-06-04T12:35:31.978706Z",
+     "shell.execute_reply": "2024-06-04T12:35:31.977504Z"
+    },
+    "papermill": {
+     "duration": 0.966751,
+     "end_time": "2024-06-04T12:35:31.981107",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:31.014356",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_18/2635146516.py:1: DtypeWarning: Columns (5,7) have mixed types. Specify dtype option on import or set low_memory=False.\n",
+      "  dx = pd.read_csv('/kaggle/input/chatgpt-reviews-daily-updated/chatgpt_reviews.csv')\n"
+     ]
+    }
+   ],
+   "source": [
+    "dx = pd.read_csv('/kaggle/input/chatgpt-reviews-daily-updated/chatgpt_reviews.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "8c4bbd81",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:31.993557Z",
+     "iopub.status.busy": "2024-06-04T12:35:31.993144Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.017957Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.016835Z"
+    },
+    "papermill": {
+     "duration": 0.03385,
+     "end_time": "2024-06-04T12:35:32.020383",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:31.986533",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>reviewId</th>\n",
+       "      <th>userName</th>\n",
+       "      <th>content</th>\n",
+       "      <th>score</th>\n",
+       "      <th>thumbsUpCount</th>\n",
+       "      <th>reviewCreatedVersion</th>\n",
+       "      <th>at</th>\n",
+       "      <th>appVersion</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>b4d0887a-d493-4e0f-8740-ad29cc2cafa5</td>\n",
+       "      <td>Zappi</td>\n",
+       "      <td>the apps works great! the speech to text is re...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "      <td>2024-06-02 22:00:48</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>852c8123-ea73-4a8d-8d78-63221a882e56</td>\n",
+       "      <td>soufiane taku</td>\n",
+       "      <td>amazing</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.139</td>\n",
+       "      <td>2024-06-02 22:00:34</td>\n",
+       "      <td>1.2024.139</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>9166feae-db4e-45f8-a77f-61a15ad0c092</td>\n",
+       "      <td>jahinam singh</td>\n",
+       "      <td>very good</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "      <td>2024-06-02 21:59:39</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2a8bda00-9a39-4c8d-b979-412b7cd5db66</td>\n",
+       "      <td>Nicolai West</td>\n",
+       "      <td>you don't need Google u need chat gpy</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "      <td>2024-06-02 21:56:36</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>884a3e77-1579-44b7-b17c-1eeb19d51195</td>\n",
+       "      <td>Ride Ninja</td>\n",
+       "      <td>مك</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "      <td>2024-06-02 21:54:48</td>\n",
+       "      <td>1.2024.143</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                               reviewId       userName  \\\n",
+       "0  b4d0887a-d493-4e0f-8740-ad29cc2cafa5          Zappi   \n",
+       "1  852c8123-ea73-4a8d-8d78-63221a882e56  soufiane taku   \n",
+       "2  9166feae-db4e-45f8-a77f-61a15ad0c092  jahinam singh   \n",
+       "3  2a8bda00-9a39-4c8d-b979-412b7cd5db66   Nicolai West   \n",
+       "4  884a3e77-1579-44b7-b17c-1eeb19d51195     Ride Ninja   \n",
+       "\n",
+       "                                             content  score  thumbsUpCount  \\\n",
+       "0  the apps works great! the speech to text is re...      5              0   \n",
+       "1                                            amazing      5              0   \n",
+       "2                                          very good      5              0   \n",
+       "3              you don't need Google u need chat gpy      5              0   \n",
+       "4                                                 مك      1              0   \n",
+       "\n",
+       "  reviewCreatedVersion                   at  appVersion  \n",
+       "0           1.2024.143  2024-06-02 22:00:48  1.2024.143  \n",
+       "1           1.2024.139  2024-06-02 22:00:34  1.2024.139  \n",
+       "2           1.2024.143  2024-06-02 21:59:39  1.2024.143  \n",
+       "3           1.2024.143  2024-06-02 21:56:36  1.2024.143  \n",
+       "4           1.2024.143  2024-06-02 21:54:48  1.2024.143  "
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dx.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "362a96f3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.033463Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.033058Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.040811Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.039744Z"
+    },
+    "papermill": {
+     "duration": 0.016807,
+     "end_time": "2024-06-04T12:35:32.042941",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.026134",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1076368"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dx.size"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "b43cc075",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.056495Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.055664Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.082850Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.081734Z"
+    },
+    "papermill": {
+     "duration": 0.036572,
+     "end_time": "2024-06-04T12:35:32.085249",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.048677",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>reviewId</th>\n",
+       "      <th>userName</th>\n",
+       "      <th>content</th>\n",
+       "      <th>score</th>\n",
+       "      <th>thumbsUpCount</th>\n",
+       "      <th>reviewCreatedVersion</th>\n",
+       "      <th>at</th>\n",
+       "      <th>appVersion</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>130136</th>\n",
+       "      <td>d4beaf8e-f6eb-4dfe-a6d1-65f02542c379</td>\n",
+       "      <td>Abduz Zami</td>\n",
+       "      <td>Noice</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.0.0022</td>\n",
+       "      <td>2023-07-26 12:33:26</td>\n",
+       "      <td>1.0.0022</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>89391</th>\n",
+       "      <td>669104ed-655f-4f0d-bd77-5acb6158779b</td>\n",
+       "      <td>adefisoye samuel</td>\n",
+       "      <td>excellent</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.122</td>\n",
+       "      <td>2024-05-10 15:41:56</td>\n",
+       "      <td>1.2024.122</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>104008</th>\n",
+       "      <td>e78e291d-ce72-447e-b219-ee0d83c91a76</td>\n",
+       "      <td>Subhash Kumar</td>\n",
+       "      <td>very good ☺️</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.073</td>\n",
+       "      <td>2024-03-27 07:25:12</td>\n",
+       "      <td>1.2024.073</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>86979</th>\n",
+       "      <td>17695cb4-6ef5-4eff-8ee1-79098adc7c17</td>\n",
+       "      <td>Ganesh Singhal</td>\n",
+       "      <td>this is amazing 👏👏🤩🤩</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2023.281</td>\n",
+       "      <td>2023-10-15 09:02:47</td>\n",
+       "      <td>1.2023.281</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11337</th>\n",
+       "      <td>91f08604-e7c2-4b8b-8cf7-fa4b07f2a8e1</td>\n",
+       "      <td>Abhijeet Bhagat</td>\n",
+       "      <td>Great work, love you</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2024.115</td>\n",
+       "      <td>2024-05-22 05:52:27</td>\n",
+       "      <td>1.2024.115</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                    reviewId          userName  \\\n",
+       "130136  d4beaf8e-f6eb-4dfe-a6d1-65f02542c379        Abduz Zami   \n",
+       "89391   669104ed-655f-4f0d-bd77-5acb6158779b  adefisoye samuel   \n",
+       "104008  e78e291d-ce72-447e-b219-ee0d83c91a76     Subhash Kumar   \n",
+       "86979   17695cb4-6ef5-4eff-8ee1-79098adc7c17    Ganesh Singhal   \n",
+       "11337   91f08604-e7c2-4b8b-8cf7-fa4b07f2a8e1   Abhijeet Bhagat   \n",
+       "\n",
+       "                     content  score  thumbsUpCount reviewCreatedVersion  \\\n",
+       "130136                 Noice      5              0             1.0.0022   \n",
+       "89391              excellent      5              0           1.2024.122   \n",
+       "104008          very good ☺️      5              0           1.2024.073   \n",
+       "86979   this is amazing 👏👏🤩🤩      5              0           1.2023.281   \n",
+       "11337   Great work, love you      5              0           1.2024.115   \n",
+       "\n",
+       "                         at  appVersion  \n",
+       "130136  2023-07-26 12:33:26    1.0.0022  \n",
+       "89391   2024-05-10 15:41:56  1.2024.122  \n",
+       "104008  2024-03-27 07:25:12  1.2024.073  \n",
+       "86979   2023-10-15 09:02:47  1.2023.281  \n",
+       "11337   2024-05-22 05:52:27  1.2024.115  "
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = dx.sample(10000)\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "9ed23834",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.099278Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.098604Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.104604Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.103487Z"
+    },
+    "papermill": {
+     "duration": 0.015666,
+     "end_time": "2024-06-04T12:35:32.106982",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.091316",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
-    "import pandas as pd\n",
-    "import numpy as np\n",
-    "import seaborn as sns\n",
-    "import matplotlib.pyplot as plt\n",
-    "import re\n"
+    "df.rename(columns={'reviewId': 'review_id',\n",
+    "                  'userName':'user_name',\n",
+    "                  'thumbsUpCount': 'thumbs_up_count',\n",
+    "                  'reviewCreatedVersion':'review_created_version',\n",
+    "                  'appVersion':'app_version'}, inplace=True)"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "cb2184b9",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.120890Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.120516Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.127494Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.126337Z"
+    },
+    "papermill": {
+     "duration": 0.016456,
+     "end_time": "2024-06-04T12:35:32.129691",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.113235",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['review_id', 'user_name', 'content', 'score', 'thumbs_up_count',\n",
+       "       'review_created_version', 'at', 'app_version'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "abcd33c6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.143905Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.143533Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.150184Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.149114Z"
+    },
+    "papermill": {
+     "duration": 0.016428,
+     "end_time": "2024-06-04T12:35:32.152481",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.136053",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(10000, 8)"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "fd067415",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.167374Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.166326Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.194016Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.192758Z"
+    },
+    "papermill": {
+     "duration": 0.037738,
+     "end_time": "2024-06-04T12:35:32.196584",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.158846",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "Index: 10000 entries, 130136 to 43567\n",
+      "Data columns (total 8 columns):\n",
+      " #   Column                  Non-Null Count  Dtype \n",
+      "---  ------                  --------------  ----- \n",
+      " 0   review_id               10000 non-null  object\n",
+      " 1   user_name               10000 non-null  object\n",
+      " 2   content                 9999 non-null   object\n",
+      " 3   score                   10000 non-null  int64 \n",
+      " 4   thumbs_up_count         10000 non-null  int64 \n",
+      " 5   review_created_version  9213 non-null   object\n",
+      " 6   at                      10000 non-null  object\n",
+      " 7   app_version             9213 non-null   object\n",
+      "dtypes: int64(2), object(6)\n",
+      "memory usage: 703.1+ KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "0f601f23",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.211355Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.210551Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.225293Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.224286Z"
+    },
+    "papermill": {
+     "duration": 0.024686,
+     "end_time": "2024-06-04T12:35:32.227668",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.202982",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "review_id                   0\n",
+       "user_name                   0\n",
+       "content                     1\n",
+       "score                       0\n",
+       "thumbs_up_count             0\n",
+       "review_created_version    787\n",
+       "at                          0\n",
+       "app_version               787\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "07e374e1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T12:35:32.242330Z",
+     "iopub.status.busy": "2024-06-04T12:35:32.241944Z",
+     "iopub.status.idle": "2024-06-04T12:35:32.266272Z",
+     "shell.execute_reply": "2024-06-04T12:35:32.265067Z"
+    },
+    "papermill": {
+     "duration": 0.034369,
+     "end_time": "2024-06-04T12:35:32.268666",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.234297",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count</th>\n",
+       "      <th>mean</th>\n",
+       "      <th>std</th>\n",
+       "      <th>min</th>\n",
+       "      <th>25%</th>\n",
+       "      <th>50%</th>\n",
+       "      <th>75%</th>\n",
+       "      <th>max</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>score</th>\n",
+       "      <td>10000.0</td>\n",
+       "      <td>4.4821</td>\n",
+       "      <td>1.105804</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>5.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>thumbs_up_count</th>\n",
+       "      <td>10000.0</td>\n",
+       "      <td>0.6222</td>\n",
+       "      <td>14.247672</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>881.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                   count    mean        std  min  25%  50%  75%    max\n",
+       "score            10000.0  4.4821   1.105804  1.0  5.0  5.0  5.0    5.0\n",
+       "thumbs_up_count  10000.0  0.6222  14.247672  0.0  0.0  0.0  0.0  881.0"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.describe().T"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "75c7ed29",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006528,
+     "end_time": "2024-06-04T12:35:32.282020",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.275492",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9f033cdb",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006355,
+     "end_time": "2024-06-04T12:35:32.295963",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.289608",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "508c800a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006264,
+     "end_time": "2024-06-04T12:35:32.308767",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.302503",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1a963155",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006456,
+     "end_time": "2024-06-04T12:35:32.321778",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.315322",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "59375b14",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006341,
+     "end_time": "2024-06-04T12:35:32.334762",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.328421",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5a07b191",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006259,
+     "end_time": "2024-06-04T12:35:32.347627",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.341368",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "10e3b325",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00627,
+     "end_time": "2024-06-04T12:35:32.360614",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.354344",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ecf6d4cd",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006423,
+     "end_time": "2024-06-04T12:35:32.373586",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.367163",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3352bb69",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006521,
+     "end_time": "2024-06-04T12:35:32.387067",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.380546",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c4b066cb",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006374,
+     "end_time": "2024-06-04T12:35:32.400455",
+     "exception": false,
+     "start_time": "2024-06-04T12:35:32.394081",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {
@@ -101,14 +959,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 6.373808,
-   "end_time": "2024-06-04T10:31:18.581866",
+   "duration": 45.025656,
+   "end_time": "2024-06-04T12:35:34.876050",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2024-06-04T10:31:12.208058",
+   "start_time": "2024-06-04T12:34:49.850394",
    "version": "2.5.0"
   }
  },
