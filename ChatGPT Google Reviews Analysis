@@ -1,0 +1,117 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "29ad7d03",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "papermill": {
+     "duration": 0.00258,
+     "end_time": "2024-06-04T10:31:15.360475",
+     "exception": false,
+     "start_time": "2024-06-04T10:31:15.357895",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "**ChatGPT Google Reviews Analysis**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3864b60f",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00179,
+     "end_time": "2024-06-04T10:31:15.364604",
+     "exception": false,
+     "start_time": "2024-06-04T10:31:15.362814",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "***Please upvote it if you are find this note book helpful. My deepest thanks for your all!***\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e1125ede",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-04T10:31:15.370599Z",
+     "iopub.status.busy": "2024-06-04T10:31:15.370159Z",
+     "iopub.status.idle": "2024-06-04T10:31:17.953898Z",
+     "shell.execute_reply": "2024-06-04T10:31:17.952478Z"
+    },
+    "papermill": {
+     "duration": 2.590478,
+     "end_time": "2024-06-04T10:31:17.957047",
+     "exception": false,
+     "start_time": "2024-06-04T10:31:15.366569",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "import re\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 4997049,
+     "sourceId": 8598172,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30715,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 6.373808,
+   "end_time": "2024-06-04T10:31:18.581866",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-06-04T10:31:12.208058",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
